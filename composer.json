@@ -1,0 +1,21 @@
+{
+    "name": "bobi/yii2-swoole",
+    "description": "yii2 swoole server",
+    "license": "Apache-2.0",
+    "authors": [
+        {
+            "name": "Aaron Woo",
+            "email": "707230686@qq.com"
+        }
+    ],
+    "require": {
+        "php": ">=7.0",
+        "ext-swoole": "*",
+        "yiisoft/yii2": "~2.0.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "bobi\\swoole\\": "src/"
+        }
+    }
+}
