@@ -1,5 +1,5 @@
 {
-    "name": "bobi/yii2-swoole",
+    "name": "jump2/yii2-swoole",
     "description": "yii2 swoole server",
     "license": "Apache-2.0",
     "authors": [
