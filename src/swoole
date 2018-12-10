@@ -1,0 +1,25 @@
+#!/usr/bin/env php
+<?php
+
+defined('YII_DEBUG') or define('YII_DEBUG', true);
+defined('YII_ENV') or define('YII_ENV', 'dev');
+defined('YII_ENABLE_ERROR_HANDLER') or define('YII_ENABLE_ERROR_HANDLER', false);
+
+require __DIR__ . '/vendor/autoload.php';
+require __DIR__ . '/vendor/yiisoft/yii2/Yii.php';
+
+$application = new yii\console\Application([
+    'id' => 'web-server',
+    'basePath' => dirname(__DIR__),
+    'components' => [
+        'httpServer' => [
+            'class'     => 'bobi\swoole\server\HttpServer',
+            'host'      => '0.0.0.0',
+            'port'      => '5410',
+            'daemonize' => 1,
+            'workerNum' => 4
+        ]
+    ]
+]);
+$application->controllerMap['server'] = 'bobi\swoole\console\controllers\ServerController';
+$exitCode = $application->run();
