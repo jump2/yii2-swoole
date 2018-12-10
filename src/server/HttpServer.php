@@ -1,7 +1,6 @@
 <?php
 /**
- * Created by PhpStorm.
- * User: aaron
+ * User: aaron.woo <707230686@qq.com>
  * Date: 2018/11/4
  * Time: 4:50 PM
  */
@@ -22,8 +21,10 @@ class HttpServer extends BaseServer
     {
         $server = new Server($this->host, $this->port);
         $server->set([
-            'worker_num' => $this->workerNum,
-            'daemonize'  => $this->daemonize,
+            'worker_num'         => $this->workerNum,
+            'daemonize'          => $this->daemonize,
+            'max_request'        => $this->maxRequest,
+            'buffer_output_size' => $this->bufferOutputSize,
         ]);
         $server->on('start', [$this, 'onStart']);
         $server->on('request', [$this, 'onRequest']);
@@ -46,7 +47,7 @@ class HttpServer extends BaseServer
         $this->config['swooleHttpResponse'] = $response;
         $app = new Application($this->config);
         $app->set('response', Yii::createObject([
-            'class' => \bobi\swoole\web\Response::class,
+            'class'  => \bobi\swoole\web\Response::class,
             'format' => 'json'
         ]));
         $app->run();
@@ -63,10 +64,10 @@ class HttpServer extends BaseServer
 
     public function initServer(Request $request)
     {
-        foreach($request->header as $key => $value) {
+        foreach ($request->header as $key => $value) {
             $_SERVER['HTTP_' . str_replace('-', '_', strtoupper($key))] = $value;
         }
-        foreach($request->server as $key => $value) {
+        foreach ($request->server as $key => $value) {
             $_SERVER[strtoupper($key)] = $value;
         }
         if (!isset($_SERVER['QUERY_STRING'])) {

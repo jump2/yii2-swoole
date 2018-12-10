@@ -27,6 +27,10 @@ abstract class BaseServer extends Component
 
     public $serverName = 'BobiServer';
 
+    public $maxRequest = 500;
+
+    public $bufferOutputSize = 2 * 1024 *1024;
+
     protected $server;
 
     /** @var IdWorker */
