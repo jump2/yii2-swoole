@@ -12,6 +12,7 @@ use Swoole\Http\Request;
 use Swoole\Http\Response;
 use Swoole\Http\Server;
 use bobi\swoole\web\Application;
+use yii\web\UploadedFile;
 
 class HttpServer extends BaseServer
 {
