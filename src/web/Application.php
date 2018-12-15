@@ -55,7 +55,7 @@ class Application extends \yii\web\Application
             return $e->statusCode;
         } catch (\Exception $e) {
             $this->getErrorHandler()->handleException($e);
-            return $e->statusCode;
+            return 0;
         } finally {
             \Yii::getLogger()->flush(true);
         }

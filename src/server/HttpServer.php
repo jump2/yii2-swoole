@@ -85,5 +85,7 @@ class HttpServer extends BaseServer
     {
         $_GET = $request->get ?? [];
         $_POST = $request->post ?? [];
+        $_FILES = $request->files ?? [];
+        UploadedFile::reset();
     }
 }
