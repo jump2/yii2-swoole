@@ -16,7 +16,7 @@ use yii\web\UploadedFile;
 
 class HttpServer extends BaseServer
 {
-    protected $config;
+    public $config;
 
     public function getServer()
     {
@@ -38,8 +38,6 @@ class HttpServer extends BaseServer
     public function onWorkerStart(\Swoole\Server $server, int $workerId)
     {
         parent::onWorkerStart($server, $workerId);
-
-        $this->config = require __DIR__ . '/../../../../../config/web.php';
     }
 
     public function onRequest(Request $request, Response $response)
