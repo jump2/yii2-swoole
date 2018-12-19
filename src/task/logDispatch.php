@@ -12,7 +12,6 @@ class logDispatch
 {
     public function execute($app, $messages, $final)
     {
-        echo 'abc';
         $app->get('log')->dispatch($messages, $final);
     }
 }
