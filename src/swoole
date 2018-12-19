@@ -13,12 +13,13 @@ $application = new yii\console\Application([
     'basePath' => dirname(__DIR__),
     'components' => [
         'httpServer' => [
-            'class'     => 'bobi\swoole\server\HttpServer',
-            'host'      => '0.0.0.0',
-            'port'      => '5410',
-            'daemonize' => 1,
-            'workerNum' => 4,
-            'config' => require __DIR__ . '/config/web.php'
+            'class'         => 'bobi\swoole\server\HttpServer',
+            'host'          => '0.0.0.0',
+            'port'          => '5410',
+            'daemonize'     => 1,
+            'workerNum'     => 4,
+            'taskWorkerNum' => 8,
+            'config'        => require __DIR__ . '/config/web.php'
         ]
     ]
 ]);

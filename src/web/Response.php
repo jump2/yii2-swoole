@@ -7,6 +7,7 @@
 
 namespace bobi\swoole\web;
 
+use bobi\swoole\Swl;
 use Yii;
 use yii\base\InvalidConfigException;
 
@@ -65,12 +66,12 @@ class Response extends \yii\web\Response
             foreach ($headers as $name => $values) {
                 $name = str_replace(' ', '-', ucwords(str_replace('-', ' ', $name)));
                 foreach ($values as $value) {
-                    Yii::$app->swooleHttpResponse->header($name, $value);
+                    Swl::$response->header($name, $value);
                 }
             }
         }
         $statusCode = $this->getStatusCode();
-        Yii::$app->swooleHttpResponse->status($statusCode);
+        Swl::$response->status($statusCode);
         $this->sendCookies();
     }
 
@@ -94,7 +95,7 @@ class Response extends \yii\web\Response
             if ($cookie->expire != 1 && isset($validationKey)) {
                 $value = Yii::$app->getSecurity()->hashData(serialize([$cookie->name, $value]), $validationKey);
             }
-            Yii::$app->swooleHttpResponse->cookie($cookie->name, $value, $cookie->expire, $cookie->path, $cookie->domain, $cookie->secure, $cookie->httpOnly);
+            Swl::$response->cookie($cookie->name, $value, $cookie->expire, $cookie->path, $cookie->domain, $cookie->secure, $cookie->httpOnly);
         }
     }
 
@@ -104,7 +105,7 @@ class Response extends \yii\web\Response
     protected function sendContent()
     {
         if ($this->stream === null) {
-            Yii::$app->swooleHttpResponse->write($this->content);
+            Swl::$response->write($this->content);
 
             return;
         }
@@ -119,12 +120,12 @@ class Response extends \yii\web\Response
                 if ($pos + $chunkSize > $end) {
                     $chunkSize = $end - $pos + 1;
                 }
-                Yii::$app->swooleHttpResponse->write(fread($handle, $chunkSize));
+                Swl::$response->write(fread($handle, $chunkSize));
             }
             fclose($handle);
         } else {
             while (!feof($this->stream)) {
-                Yii::$app->swooleHttpResponse->write(fread($this->stream, $chunkSize));
+                Swl::$response->write(fread($this->stream, $chunkSize));
             }
             fclose($this->stream);
         }

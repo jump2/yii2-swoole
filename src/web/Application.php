@@ -7,16 +7,13 @@
 
 namespace bobi\swoole\web;
 
+use bobi\swoole\Swl;
 use Swoole\Http\Response as SwooleHttpResponse;
 use yii\base\ExitException;
 use yii\base\UserException;
 
 class Application extends \yii\web\Application
 {
-    public $swooleHttpResponse;
-
-//    public $userExceptions = [];
-
     /**
      * Gets the application start timestamp.
      */
@@ -27,9 +24,6 @@ class Application extends \yii\web\Application
         parent::init();
 
         $this->beginTime = microtime(true);
-        if (null === $this->swooleHttpResponse || !$this->swooleHttpResponse instanceof SwooleHttpResponse) {
-            throw new InvalidConfigException('Response::$swooleResponse cannot be null or unknown type be set');
-        }
     }
 
     public function run()
@@ -86,7 +80,7 @@ class Application extends \yii\web\Application
             throw new ExitException($status);
         }
 
-        $this->swooleHttpResponse->end();
+        Swl::$response->end();
     }
 
     /**
@@ -109,10 +103,10 @@ class Application extends \yii\web\Application
     public function coreComponents()
     {
         return array_merge(parent::coreComponents(), [
-            'request' => ['class' => 'bobi\swoole\web\Request'],
-            'response' => ['class' => 'bobi\swoole\web\Response'],
-            'session' => ['class' => 'yii\web\Session'],
-            'user' => ['class' => 'yii\web\User'],
+            'request'      => ['class' => 'bobi\swoole\web\Request'],
+            'response'     => ['class' => 'bobi\swoole\web\Response'],
+            'session'      => ['class' => 'yii\web\Session'],
+            'user'         => ['class' => 'yii\web\User'],
             'errorHandler' => ['class' => 'bobi\swoole\web\ErrorHandler'],
         ]);
     }

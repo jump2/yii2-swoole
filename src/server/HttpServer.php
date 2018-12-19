@@ -7,6 +7,7 @@
 
 namespace bobi\swoole\server;
 
+use bobi\swoole\Swl;
 use Yii;
 use Swoole\Http\Request;
 use Swoole\Http\Response;
@@ -18,11 +19,14 @@ class HttpServer extends BaseServer
 {
     public $config;
 
+    public $app;
+
     public function getServer()
     {
         $server = new Server($this->host, $this->port);
         $server->set([
             'worker_num'         => $this->workerNum,
+            'task_worker_num'    => $this->taskWorkerNum,
             'daemonize'          => $this->daemonize,
             'max_request'        => $this->maxRequest,
             'buffer_output_size' => $this->bufferOutputSize,
@@ -31,6 +35,8 @@ class HttpServer extends BaseServer
         $server->on('request', [$this, 'onRequest']);
         $server->on('managerStart', [$this, 'onManagerStart']);
         $server->on('workerStart', [$this, 'onWorkerStart']);
+        $server->on('task', [$this, 'onTask']);
+        $server->on('finish', [$this, 'onFinish']);
 
         return $server;
     }
@@ -38,12 +44,13 @@ class HttpServer extends BaseServer
     public function onWorkerStart(\Swoole\Server $server, int $workerId)
     {
         parent::onWorkerStart($server, $workerId);
+        Swl::$server = $server;
+        $this->app = new Application($this->config);
     }
 
     public function onRequest(Request $request, Response $response)
     {
-        $this->initData($request);
-        $this->config['swooleHttpResponse'] = $response;
+        $this->initData($request, $response);
         $app = new Application($this->config);
         $app->set('response', Yii::createObject([
             'class'  => \bobi\swoole\web\Response::class,
@@ -54,11 +61,12 @@ class HttpServer extends BaseServer
         $response->end();
     }
 
-    public function initData(Request $request)
+    public function initData(Request $request, Response $response)
     {
-        Yii::setLogger(null);
+        Yii::setLogger(Yii::createObject('bobi\swoole\log\Logger'));
         $this->initGetPost($request);
         $this->initServer($request);
+        Swl::$response = $response;
     }
 
     public function initServer(Request $request)

@@ -23,6 +23,8 @@ abstract class BaseServer extends Component
 
     public $workerNum = 4;
 
+    public $taskWorkerNum = 8;
+
     public $daemonize = 0;
 
     public $serverName = 'BobiServer';
@@ -127,7 +129,10 @@ abstract class BaseServer extends Component
      */
     public function onTask(Server $server, int $taskId, int $srcWorkerId, $data)
     {
-
+        $task = array_shift($data);
+        $app = clone $this->app;
+        array_unshift($data, $app);
+        call_user_func_array([(new $task()), 'execute'], $data);
     }
 
     /**

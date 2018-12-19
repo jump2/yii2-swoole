@@ -7,6 +7,7 @@
 
 namespace bobi\swoole\web;
 
+use bobi\swoole\Swl;
 use Yii;
 use yii\base\ErrorException;
 use yii\base\ExitException;
@@ -55,7 +56,7 @@ class ErrorHandler extends \yii\web\ErrorHandler
 
             // set preventive HTTP status code to 500 in case error handling somehow fails and headers are sent
             // HTTP exceptions will override this value in renderException()
-            Yii::$app->swooleHttpResponse->status(500);
+            Swl::$response->status(500);
 
             $this->logException($exception);
             if ($this->discardExistingOutput) {
@@ -85,7 +86,7 @@ class ErrorHandler extends \yii\web\ErrorHandler
 
         // set preventive HTTP status code to 500 in case error handling somehow fails and headers are sent
         // HTTP exceptions will override this value in renderException()
-        Yii::$app->swooleHttpResponse->status(500);
+        Swl::$response->status(500);
 
         $this->logException($exception);
         if ($this->discardExistingOutput) {
