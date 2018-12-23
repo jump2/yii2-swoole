@@ -62,9 +62,7 @@ class Application extends \yii\web\Application
             $this->getErrorHandler()->handleException($e);
             return 0;
         } finally {
-            $s = microtime(true);
             \Yii::getLogger()->flush(true);
-            echo bcsub(microtime(true),$s,10),PHP_EOL;
         }
     }
 
