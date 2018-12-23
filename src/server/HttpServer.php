@@ -19,6 +19,9 @@ class HttpServer extends BaseServer
 {
     public $config;
 
+    /**
+     * @var Application
+     */
     public $app;
 
     public function getServer()
@@ -45,17 +48,20 @@ class HttpServer extends BaseServer
     {
         parent::onWorkerStart($server, $workerId);
         Swl::$server = $server;
+
+        $_SERVER['PHP_SELF'] = '/index.php';
+        $_SERVER['SCRIPT_NAME'] = '/index.php';
+        $_SERVER['SCRIPT_FILENAME'] = $_SERVER['PWD'] . '/web/index.php';
+        $_SERVER['DOCUMENT_ROOT'] = $_SERVER['PWD'] . '/web';
+        $_SERVER['DOCUMENT_URI'] = '/index.php';
+        Yii::setLogger(Yii::createObject('bobi\swoole\log\Logger'));
         $this->app = new Application($this->config);
     }
 
     public function onRequest(Request $request, Response $response)
     {
         $this->initData($request, $response);
-        $app = new Application($this->config);
-        $app->set('response', Yii::createObject([
-            'class'  => \bobi\swoole\web\Response::class,
-            'format' => 'json'
-        ]));
+        $app = clone $this->app;
         $app->run();
 
         $response->end();
@@ -63,7 +69,6 @@ class HttpServer extends BaseServer
 
     public function initData(Request $request, Response $response)
     {
-        Yii::setLogger(Yii::createObject('bobi\swoole\log\Logger'));
         $this->initGetPost($request);
         $this->initServer($request);
         Swl::$response = $response;
@@ -81,11 +86,6 @@ class HttpServer extends BaseServer
             $_SERVER['QUERY_STRING'] = '';
         }
         $_SERVER['SERVER_NAME'] = $_SERVER['HTTP_HOST'];
-        $_SERVER['PHP_SELF'] = '/index.php';
-        $_SERVER['SCRIPT_NAME'] = '/index.php';
-        $_SERVER['SCRIPT_FILENAME'] = $_SERVER['PWD'] . '/web/index.php';
-        $_SERVER['DOCUMENT_ROOT'] = $_SERVER['PWD'] . '/web';
-        $_SERVER['DOCUMENT_URI'] = '/index.php';
     }
 
     public function initGetPost(Request $request)

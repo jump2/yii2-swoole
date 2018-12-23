@@ -18,6 +18,11 @@ class Task extends \yii\base\Component
         if (!isset($this->taskMap[$name])) {
             throw new \Exception("Task '$name' does not exist");
         }
+        array_unshift($arguments, [
+            $_GET,
+            $_POST,
+            $_SERVER,
+        ]);
         array_unshift($arguments, $this->taskMap[$name]);
         Swl::$server->task($arguments);
     }

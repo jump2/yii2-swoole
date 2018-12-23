@@ -7,8 +7,10 @@
 
 namespace bobi\swoole\web;
 
+use Yii;
 use bobi\swoole\Swl;
 use Swoole\Http\Response as SwooleHttpResponse;
+use yii\base\Event;
 use yii\base\ExitException;
 use yii\base\UserException;
 
@@ -26,8 +28,17 @@ class Application extends \yii\web\Application
         $this->beginTime = microtime(true);
     }
 
+    /**
+     * 重置开始时间
+     */
+    public function resetBeginTime()
+    {
+        $this->beginTime = microtime(true);
+    }
+
     public function run()
     {
+        Event::offAll();
         try {
             $this->state = self::STATE_BEFORE_REQUEST;
             $this->trigger(self::EVENT_BEFORE_REQUEST);
@@ -51,7 +62,9 @@ class Application extends \yii\web\Application
             $this->getErrorHandler()->handleException($e);
             return 0;
         } finally {
+            $s = microtime(true);
             \Yii::getLogger()->flush(true);
+            echo bcsub(microtime(true),$s,10),PHP_EOL;
         }
     }
 
@@ -103,11 +116,27 @@ class Application extends \yii\web\Application
     public function coreComponents()
     {
         return array_merge(parent::coreComponents(), [
+            'log'          => ['class' => 'bobi\swoole\log\Dispatcher'],
             'request'      => ['class' => 'bobi\swoole\web\Request'],
             'response'     => ['class' => 'bobi\swoole\web\Response'],
             'session'      => ['class' => 'yii\web\Session'],
             'user'         => ['class' => 'yii\web\User'],
             'errorHandler' => ['class' => 'bobi\swoole\web\ErrorHandler'],
         ]);
+    }
+
+    public function __clone()
+    {
+        parent::__clone();
+        Yii::$app = $this;
+        $this->resetBeginTime();
+        $this->set('request', clone $this->getRequest());
+        $this->set('user', clone $this->getUser());
+        $this->set('errorHandler', clone $this->getErrorHandler());
+        $this->set('session', clone $this->getSession());
+        $this->set('response', Yii::createObject([
+            'class'  => Response::class,
+            'format' => 'json'
+        ]));
     }
 }

@@ -130,6 +130,7 @@ abstract class BaseServer extends Component
     public function onTask(Server $server, int $taskId, int $srcWorkerId, $data)
     {
         $task = array_shift($data);
+        list($_GET, $_POST, $_SERVER) = array_shift($data);
         $app = clone $this->app;
         array_unshift($data, $app);
         call_user_func_array([(new $task()), 'execute'], $data);
